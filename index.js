@@ -1,6 +1,5 @@
 export default (defaults = {}) => {
   const rules = [];
-  const contexts = [];
   exec.exec = exec;
   exec.use = use;
   return exec;
@@ -9,8 +8,8 @@ export default (defaults = {}) => {
     let i = 0;
 
     function next(res) {
-      const ctx = contexts[i - 1];
-      const mw = rules[i++];
+      const {ctx} = rules[i - 1] || {};
+      const {mw} = rules[i++] || {};
       if (ctx && isResultInvalid(res)) return pushResult(ctx, fn);
       if (!mw) return pushResult(null, fn);
       res = mw(value, fn ? next : fn, opts);
@@ -21,8 +20,7 @@ export default (defaults = {}) => {
   }
 
   function use(mw, ctx) {
-    contexts.push(ctx);
-    rules.push(mw);
+    rules.push({mw, ctx});
     return exec;
   }
 };
