@@ -1,4 +1,4 @@
-import {equal} from 'assert';
+import {equal, deepEqual} from 'assert';
 import validate from './index';
 
 const syncValidateStringType = validate()
@@ -16,7 +16,7 @@ it('should success sync validate', () => {
 });
 
 it('should fail sync validate', () => {
-  equal(syncValidateStringType(12), 'type');
+  deepEqual(syncValidateStringType(12), ['type']);
 });
 
 it('should success sync validate using function as middleware', () => {
@@ -24,8 +24,8 @@ it('should success sync validate using function as middleware', () => {
 });
 
 it('should fail sync validate using function as middleware', () => {
-  equal(syncValidateString(12), 'type');
-  equal(syncValidateString('bye'), 'start');
+  deepEqual(syncValidateString(12), ['type']);
+  deepEqual(syncValidateString('bye'), ['start']);
 });
 
 const asyncValidateStringType = validate()
@@ -55,7 +55,7 @@ it('should success async validate', (done) => {
 
 it('should fail async validate', (done) => {
   asyncValidateStringType(12, err => {
-    equal(err, 'type');
+    deepEqual(err, ['type']);
     done();
   });
 });
@@ -69,7 +69,7 @@ it('should success async validate using function as middleware', (done) => {
 
 it('should fail async validate using function as middleware', (done) => {
   asyncValidateString('bye', err => {
-    equal(err, 'start');
+    deepEqual(err, ['start']);
     done();
   });
 });
@@ -88,7 +88,7 @@ it('should success mix validate using function as middleware', (done) => {
 
 it('should fail mix validate using function as middleware', (done) => {
   mixValidateString('health', err => {
-    equal(err, 'end');
+    deepEqual(err, ['end']);
     done();
   });
 });
