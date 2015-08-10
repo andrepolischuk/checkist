@@ -10,7 +10,7 @@ npm install --save validate-smth
 
 ## Usage
 
-  Sync validation
+  Sync
 
 ```js
 var validate = require('validate-smth');
@@ -24,7 +24,7 @@ validateString(100); // 'type'
 validateString('world'); // null
 ```
 
-  Async validation
+  Async
 
 ```js
 var validate = require('validate-smth');
@@ -36,11 +36,39 @@ var validateString = validate()
     }, 500);
   }, 'type');
 
-validateString(100, function(err) {
+validateString(100, function (err) {
   err; // 'type'
 });
 
-validateString('world', function(err) {
+validateString('world', function (err) {
+  err; // null
+});
+```
+
+  Mix
+
+```js
+var validate = require('validate-smth');
+
+var validateString = validate()
+  .use(function (value) {
+    return typeof value === 'string';
+  }, 'type')
+  .use(function (value, next) {
+    setTimeout(function () {
+      next(value.length === 5);
+    }, 500);
+  }, 'length');
+
+validateString(100, function (err) {
+  err; // 'type'
+});
+
+validateString('awesome', function (err) {
+  err; // 'length'
+});
+
+validateString('world', function (err) {
   err; // null
 });
 ```
