@@ -1,21 +1,16 @@
 export default (defaults = {}) => {
-  const middlewares = [];
+  const rules = [];
   const contexts = [];
-
-  function validate(...args) {
-    return exec(...args);
-  }
-
-  validate.exec = exec;
-  validate.use = use;
-  return validate;
+  exec.exec = exec;
+  exec.use = use;
+  return exec;
 
   function exec(value, fn, opts) {
     let i = 0;
 
     function next(res) {
       const ctx = contexts[i - 1];
-      const mw = middlewares[i++];
+      const mw = rules[i++];
       if (ctx && isResultInvalid(res)) return pushResult(ctx, fn);
       if (!mw) return pushResult(null, fn);
       res = mw(value, fn ? next : fn, opts);
@@ -27,8 +22,8 @@ export default (defaults = {}) => {
 
   function use(mw, ctx) {
     contexts.push(ctx);
-    middlewares.push(mw);
-    return validate;
+    rules.push(mw);
+    return exec;
   }
 };
 
