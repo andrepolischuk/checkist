@@ -1,18 +1,18 @@
 export default (defaults = {}) => {
   const rules = [];
   let blocking = true;
-  exec.blocking = useBlocking;
-  exec.notBlocking = useNotBlocking;
+  exec.blocking = setBlocking;
+  exec.notBlocking = notBlocking;
   exec.exec = exec;
   exec.use = use;
   return exec;
 
-  function useBlocking() {
+  function setBlocking() {
     blocking = true;
     return exec;
   }
 
-  function useNotBlocking() {
+  function notBlocking() {
     blocking = false;
     return exec;
   }
@@ -24,10 +24,9 @@ export default (defaults = {}) => {
     function next(res) {
       const {ctx, blocking} = rules[i - 1] || {};
       const {mw} = rules[i++] || {};
-      const err = ctx && isInvalid(res);
-      if (err) errors.push(ctx);
-      if (err && blocking) return pushResult(errors, fn);
-      if (!mw) return pushResult(errors, fn);
+      const isInvalid = res === false || Array.isArray(res);
+      if (isInvalid) errors.push(ctx);
+      if (isInvalid && blocking || !mw) return pushResult(errors, fn);
       res = mw(value, fn ? next : fn, opts);
       if (res !== undefined) return next(res);
     }
@@ -40,10 +39,6 @@ export default (defaults = {}) => {
     return exec;
   }
 };
-
-function isInvalid(res) {
-  return res === false || Array.isArray(res);
-}
 
 function pushResult(res, fn) {
   res = res.length ? res : null;
