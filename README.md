@@ -40,8 +40,11 @@ validateString('awesome'); // null
   Can be used validation functions (`vf`) as middleware
 
 ```js
-var validateStringType = validateSmth().use(isString, 'type');
-var validateStringLength = validateSmth().use(hasLength, 'length');
+var validateStringType = validateSmth()
+  .use(isString, 'type');
+
+var validateStringLength = validateSmth()
+  .use(hasLength, 'length');
 
 var validateString = validateSmth()
   .use(validateStringType, 'type')
@@ -150,7 +153,7 @@ var validateEmail = validateSmth()
   .use(function (value) {
     return 'email' in value;
   }, 'require')
-  .use(isEmail 'format');
+  .use(isEmail, 'format');
 
 var validateUser = validateSmth()
   .nestedErrors()
