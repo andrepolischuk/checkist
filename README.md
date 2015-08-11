@@ -85,7 +85,7 @@ validateSmth()
   });
 ```
 
-### ,nestedErrors()
+### .nestedErrors()
 
   Push all nested errors in result
 
