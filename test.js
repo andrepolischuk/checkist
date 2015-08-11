@@ -20,6 +20,13 @@ const syncNotBlockingValidateString = validate()
   .use(syncValidateStringStart, 'start')
   .use(syncValidateStringEnd, 'end');
 
+const syncNestedValidateString = validate()
+  .nestedErrors()
+  .use(syncValidateStringType, 'type')
+  .notBlocking()
+  .use(syncValidateStringStart, 'start')
+  .use(syncValidateStringEnd, 'end');
+
 const asyncValidateStringType = validate()
   .use((value, next) => {
     setTimeout(() => {
@@ -51,12 +58,26 @@ const asyncNotBlockingValidateString = validate()
   .use(asyncValidateStringStart, 'start')
   .use(asyncValidateStringEnd, 'end');
 
+const asyncNestedValidateString = validate()
+  .nestedErrors()
+  .use(asyncValidateStringType, 'type')
+  .notBlocking()
+  .use(asyncValidateStringStart, 'start')
+  .use(asyncValidateStringEnd, 'end');
+
 const mixedValidateString = validate()
   .use(syncValidateStringType, 'type')
   .use(asyncValidateStringStart, 'start')
   .use(syncValidateStringEnd, 'end');
 
 const mixedNotBlockingValidateString = validate()
+  .use(syncValidateStringType, 'type')
+  .notBlocking()
+  .use(asyncValidateStringStart, 'start')
+  .use(syncValidateStringEnd, 'end');
+
+const mixedNestedValidateString = validate()
+  .nestedErrors()
   .use(syncValidateStringType, 'type')
   .notBlocking()
   .use(asyncValidateStringStart, 'start')
@@ -86,6 +107,15 @@ it('should pass sync validation using not blocking middleware', () => {
 it('should fail sync validation using not blocking middleware', () => {
   deepEqual(syncNotBlockingValidateString(12), ['type']);
   deepEqual(syncNotBlockingValidateString('superb'), ['start', 'end']);
+});
+
+it('should pass sync validation with nested errors', () => {
+  equal(syncNestedValidateString('awesome'), null);
+});
+
+it('should fail sync validation with nested errors', () => {
+  deepEqual(syncNestedValidateString(12), ['type', 'type.type']);
+  deepEqual(syncNestedValidateString('superb'), ['start', 'start.start', 'end']);
 });
 
 it('should pass async validation', (done) => {
@@ -130,6 +160,20 @@ it('should fail async validation using not blocking middleware', (done) => {
   });
 });
 
+it('should pass async validation with nested errors', (done) => {
+  asyncNestedValidateString('awesome', err => {
+    equal(err, null);
+    done();
+  });
+});
+
+it('should fail async validation with nested errors', (done) => {
+  asyncNestedValidateString('superb', err => {
+    deepEqual(err, ['start', 'start.start', 'end']);
+    done();
+  });
+});
+
 it('should pass mixed validation using function as middleware', (done) => {
   mixedValidateString('awesome', err => {
     equal(err, null);
@@ -154,6 +198,20 @@ it('should pass mixed validation using not blocking middleware', (done) => {
 it('should fail mixed validation using not blocking middleware', (done) => {
   mixedNotBlockingValidateString('superb', err => {
     deepEqual(err, ['start', 'end']);
+    done();
+  });
+});
+
+it('should pass mixed validation with nested errors', (done) => {
+  mixedNestedValidateString('awesome', err => {
+    equal(err, null);
+    done();
+  });
+});
+
+it('should fail mixed validation with nested errors', (done) => {
+  mixedNestedValidateString('superb', err => {
+    deepEqual(err, ['start', 'start.start', 'end']);
     done();
   });
 });
