@@ -35,38 +35,11 @@ validateString('awesome'); // null
 
   Add validation function as validation middleware with specified error context
 
-  Can be used sync function
+  Can be used validate functions as middleware
 
 ```js
-var validateString = validateSmth()
-  .use(function (value) {
-    return typeof value === 'string';
-  });
-```
-
-  Async function
-
-```js
-var validateString = validateSmth()
-  .use(function (value, next) {
-    setTimeout(function () {
-      next(typeof value === 'string');
-    }, 1000);
-  });
-```
-
-  Validation function
-
-```js
-var validateStringType = validateSmth()
-  .use(function (value) {
-    return typeof value === 'string';
-  });
-
-var validateStringLength = validateSmth()
-  .use(function (value) {
-    return typeof value === 'string';
-  });
+var validateStringType = validateSmth().use(isString, 'type');
+var validateStringLength = validateSmth().use(hasLength, 'length');
 
 var validateString = validateSmth()
   .use(validateStringType, 'type')
@@ -108,6 +81,26 @@ validateSmth()
   .exec({}, function (err) {
     err; // ['name', 'email']
   });
+```
+
+## Middlewares
+
+  Sync function
+
+```js
+function mw(value) {
+  return typeof value === 'string';
+}
+```
+
+  Async function
+
+```js
+function mw(value, next) {
+  setTimeout(function () {
+    next(typeof value === 'string');
+  }, 1000);
+}
 ```
 
 ## License
