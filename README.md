@@ -1,8 +1,8 @@
 # validate-smth [![Build Status][travis-image]][travis-url]
 
-  > Tool for compose validation functions
+  > Tool for compose modular and reusable validation functions
 
-  Sync, async, mixed, not blocking
+  Sync, async, mixed, nested, not blocking
 
 ## Install
 
@@ -129,6 +129,40 @@ function mw(value, next) {
     next(typeof value === 'string');
   }, 1000);
 }
+```
+
+## Example
+
+```js
+var validateSmth = require('validate-smth');
+var isEmail = require('is-email');
+var isObject = require('is-object');
+
+var validateName = validateSmth()
+  .use(function (value) {
+    return 'name' in value;
+  }, 'require')
+  .use(function (value) {
+    return value.name.length > 0;
+  }, 'length');
+
+var validateEmail = validateSmth()
+  .use(function (value) {
+    return 'email' in value;
+  }, 'require')
+  .use(isEmail 'format');
+
+var validateUser = validateSmth()
+  .nestedErrors()
+  .use(isObject, 'type')
+  .notBlocking()
+  .use(validateName, 'name')
+  .use(validateEmail, 'email');
+
+validateUser(undefined); // ['type']
+validateUser({}); // ['name', 'name.require', 'email', 'email.require']
+validateUser({name: 'awesome', email: 'awesome'}); // ['email', 'email.format']
+validateUser({name: 'awesome', email: 'awesome@gmail.com'}); // null
 ```
 
 ## License

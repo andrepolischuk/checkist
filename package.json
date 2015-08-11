@@ -1,11 +1,13 @@
 {
   "name": "validate-smth",
-  "description": "Tool for compose validation functions",
+  "description": "Tool for compose modular and reusable validation functions",
   "version": "0.1.0",
   "keywords": [
     "modular",
+    "reusable",
+    "validator",
     "validation",
-    "validator"
+    "function"
   ],
   "repository": "andrepolischuk/validate-smth",
   "devDependencies": {
