@@ -31,13 +31,13 @@ validateString('awesome'); // null
 
 ### validateSmth()
 
-  Create new validate function (`vf`)
+  Create new validation function (`vf`)
 
 ### .use(fn, context)
 
   Add function as validation middleware with specified error context
 
-  Can be used validate functions (`vf`) as middleware
+  Can be used validation functions (`vf`) as middleware
 
 ```js
 var validateStringType = validateSmth().use(isString, 'type');
@@ -52,7 +52,7 @@ var validateString = validateSmth()
 
   Validate something via validation middlewares
 
-  For sync function
+  For sync function:
 
 ```js
 validateSmth()
@@ -60,7 +60,7 @@ validateSmth()
   .exec({}); // null
 ```
 
-  For async function
+  For async function:
 
 ```js
 validateSmth()
@@ -85,13 +85,35 @@ validateSmth()
   });
 ```
 
+### ,nestedErrors()
+
+  Push all nested errors in result
+
+```js
+var validateEmail = validateSmth()
+  .use(function (value) {
+    return 'email' in value;
+  }, 'require')
+  .use(isEmail, 'format');
+
+var validateUser = validateSmth()
+  .nestedErrors()
+  .notBlocking()
+  .use(function (value) {
+    return 'name' in value;
+  }, 'name')
+  .use(validateEmail, 'email');
+
+validateUser({}); // ['email', 'email.require', 'name']
+```
+
 ### vf(value[, next])
 
   Alias for `vf.exec`
 
 ## Middlewares
 
-  Can be used sync function
+  Can be used sync:
 
 ```js
 function mw(value) {
@@ -99,7 +121,7 @@ function mw(value) {
 }
 ```
 
-  And async function
+  and async function:
 
 ```js
 function mw(value, next) {
