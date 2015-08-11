@@ -10,67 +10,104 @@ npm install --save validate-smth
 
 ## Usage
 
-  Sync
-
 ```js
-var validate = require('validate-smth');
+var validateSmth = require('validate-smth');
+var isString = require('is-string');
 
 var validateString = validate()
+  .use(isString, 'type')
   .use(function (value) {
-    return typeof value === 'string';
-  }, 'type');
+    return value === 'awesome';
+  }, 'content');
 
-validateString(100); // 'type'
-validateString('world'); // null
+validateString(100); // ['type']
+validateString('superb'); // ['content']
+validateString('awesome'); // null
 ```
 
-  Async
+## API
+
+### validateSmth()
+
+  Create new validate function
+
+### .use(fn, context)
+
+  Add validation function as validation middleware with specified error context
+
+  Can be used sync function
 
 ```js
-var validate = require('validate-smth');
+var validateString = validateSmth()
+  .use(function (value) {
+    return typeof value === 'string';
+  });
+```
 
-var validateString = validate()
+  Async function
+
+```js
+var validateString = validateSmth()
   .use(function (value, next) {
     setTimeout(function () {
       next(typeof value === 'string');
-    }, 500);
-  }, 'type');
-
-validateString(100, function (err) {
-  err; // 'type'
-});
-
-validateString('world', function (err) {
-  err; // null
-});
+    }, 1000);
+  });
 ```
 
-  Mix
+  Validation function
 
 ```js
-var validate = require('validate-smth');
-
-var validateString = validate()
+var validateStringType = validateSmth()
   .use(function (value) {
     return typeof value === 'string';
-  }, 'type')
-  .use(function (value, next) {
-    setTimeout(function () {
-      next(value.length === 5);
-    }, 500);
-  }, 'length');
+  });
 
-validateString(100, function (err) {
-  err; // 'type'
-});
+var validateStringLength = validateSmth()
+  .use(function (value) {
+    return typeof value === 'string';
+  });
 
-validateString('awesome', function (err) {
-  err; // 'length'
-});
+var validateString = validateSmth()
+  .use(validateStringType, 'type')
+  .use(validateStringLength, 'length');
+```
 
-validateString('world', function (err) {
-  err; // null
-});
+### .exec(value[, fn])
+
+  Validate something via validation middlewares
+
+  For sync function
+
+```js
+validateSmth()
+  .use(isObject, 'type')
+  .exec({}); // null
+```
+
+  For async function
+
+```js
+validateSmth()
+  .use(isObject, 'type')
+  .exec({}, function (err) {
+    err; // null
+  });
+```
+
+### .notBlocking()
+
+  Start using not blocking middlewares
+
+```js
+validateSmth()
+  .use(isObject, 'type')
+  .notBlocking()
+  .use(hasName, 'name')
+  .use(hasEmail, 'email')
+  .exec({}, function (err) {
+    err; // ['name', 'email']
+  });
 ```
 
 ## License
