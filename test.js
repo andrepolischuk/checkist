@@ -51,12 +51,12 @@ const asyncNotBlockingValidateString = validate()
   .use(asyncValidateStringStart, 'start')
   .use(asyncValidateStringEnd, 'end');
 
-const mixValidateString = validate()
+const mixedValidateString = validate()
   .use(syncValidateStringType, 'type')
   .use(asyncValidateStringStart, 'start')
   .use(syncValidateStringEnd, 'end');
 
-const mixNotBlockingValidateString = validate()
+const mixedNotBlockingValidateString = validate()
   .use(syncValidateStringType, 'type')
   .notBlocking()
   .use(asyncValidateStringStart, 'start')
@@ -130,29 +130,29 @@ it('should fail async validation using not blocking middleware', (done) => {
   });
 });
 
-it('should pass mix validation using function as middleware', (done) => {
-  mixValidateString('awesome', err => {
+it('should pass mixed validation using function as middleware', (done) => {
+  mixedValidateString('awesome', err => {
     equal(err, null);
     done();
   });
 });
 
-it('should fail mix validation using function as middleware', (done) => {
-  mixValidateString('awesomeness', err => {
+it('should fail mixed validation using function as middleware', (done) => {
+  mixedValidateString('awesomeness', err => {
     deepEqual(err, ['end']);
     done();
   });
 });
 
-it('should pass mix validation using not blocking middleware', (done) => {
-  mixNotBlockingValidateString('awesome', err => {
+it('should pass mixed validation using not blocking middleware', (done) => {
+  mixedNotBlockingValidateString('awesome', err => {
     equal(err, null);
     done();
   });
 });
 
-it('should fail mix validation using not blocking middleware', (done) => {
-  mixNotBlockingValidateString('superb', err => {
+it('should fail mixed validation using not blocking middleware', (done) => {
+  mixedNotBlockingValidateString('superb', err => {
     deepEqual(err, ['start', 'end']);
     done();
   });
