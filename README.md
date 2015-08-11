@@ -2,6 +2,8 @@
 
   > Tool for compose validation functions
 
+  Sync, async, mixed, not blocking
+
 ## Install
 
 ```sh
