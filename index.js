@@ -29,9 +29,16 @@ export default (defaults = {}) => {
     return exec;
   }
 
-  function exec(value, fn, opts) {
+  function exec(value, options, fn) {
     const errors = [];
     let i = 0;
+
+    if (typeof options === 'function') {
+      fn = options;
+      options = {};
+    }
+
+    options = Object.assign({}, defaults, options);
 
     function next(res) {
       const {ctx, blocking} = rules[i - 1] || {};
@@ -42,7 +49,7 @@ export default (defaults = {}) => {
       if (isArray && nested) contexts.push(...res.map(val => `${ctx}.${val}`));
       if (isInvalid) errors.push(...contexts);
       if (isInvalid && blocking || !mw) return pushResult(errors, fn);
-      res = mw(value, fn ? next : fn, opts);
+      res = mw(value, options, fn ? next : fn);
       if (res !== undefined) return next(res);
     }
 

@@ -29,9 +29,9 @@ validateString('awesome'); // null
 
 ## API
 
-### validateSmth()
+### validateSmth(defaults)
 
-  Create new validation function (`vf`)
+  Create new validation function (`vf`) with default options
 
 ### .use(fn, context)
 
@@ -48,7 +48,7 @@ var validateString = validateSmth()
   .use(validateStringLength, 'length');
 ```
 
-### .exec(value[, fn])
+### .exec(value[, options, fn])
 
   Validate something via validation middlewares
 
@@ -116,7 +116,7 @@ validateUser({}); // ['email', 'email.require', 'name']
   Can be used sync:
 
 ```js
-function mw(value) {
+function mw(value, options) {
   return typeof value === 'string';
 }
 ```
@@ -124,7 +124,7 @@ function mw(value) {
   and async function:
 
 ```js
-function mw(value, next) {
+function mw(value, options, next) {
   setTimeout(function () {
     next(typeof value === 'string');
   }, 1000);

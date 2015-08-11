@@ -27,21 +27,27 @@ const syncNestedValidateString = validate()
   .use(syncValidateStringStart, 'start')
   .use(syncValidateStringEnd, 'end');
 
+const syncValidateWithOptions = validate({locale: 'en-us'})
+  .use((value, options) => value === options.locale, 'locale');
+
+const syncValidateWithOverridenOptions = validate({locale: 'ru-ru'})
+  .use(syncValidateWithOptions, 'locale');
+
 const asyncValidateStringType = validate()
-  .use((value, next) => {
+  .use((value, options, next) => {
     setTimeout(() => {
       next(typeof value === 'string');
     }, 100);
   }, 'type');
 
 const asyncValidateStringStart = validate()
-  .use((value, next) => {
+  .use((value, options, next) => {
     setTimeout(() => {
       next(value.charAt(0) === 'a');
     }, 100);
   }, 'start');
 
-const asyncValidateStringEnd = (value, next) => {
+const asyncValidateStringEnd = (value, options, next) => {
   setTimeout(() => {
     next(value.charAt(value.length - 1) === 'e');
   }, 100);
@@ -64,6 +70,16 @@ const asyncNestedValidateString = validate()
   .notBlocking()
   .use(asyncValidateStringStart, 'start')
   .use(asyncValidateStringEnd, 'end');
+
+const asyncValidateWithOptions = validate({locale: 'en-us'})
+  .use((value, options, next) => {
+    setTimeout(() => {
+      next(value === options.locale);
+    }, 100);
+  }, 'locale');
+
+const asyncValidateWithOverridenOptions = validate({locale: 'ru-ru'})
+  .use(asyncValidateWithOptions, 'locale');
 
 const mixedValidateString = validate()
   .use(syncValidateStringType, 'type')
@@ -118,6 +134,22 @@ it('should fail sync validation with nested errors', () => {
   deepEqual(syncNestedValidateString('superb'), ['start', 'start.start', 'end']);
 });
 
+it('should pass sync validation with options', () => {
+  equal(syncValidateWithOptions('en-us'), null);
+});
+
+it('should fail sync validation with options', () => {
+  deepEqual(syncValidateWithOptions('en'), ['locale']);
+});
+
+it('should pass sync validation with overriden options', () => {
+  equal(syncValidateWithOverridenOptions('ru-ru'), null);
+});
+
+it('should fail sync validation with overriden options', () => {
+  deepEqual(syncValidateWithOverridenOptions('ru'), ['locale']);
+});
+
 it('should pass async validation', (done) => {
   asyncValidateStringType('awesome', err => {
     equal(err, null);
@@ -170,6 +202,34 @@ it('should pass async validation with nested errors', (done) => {
 it('should fail async validation with nested errors', (done) => {
   asyncNestedValidateString('superb', err => {
     deepEqual(err, ['start', 'start.start', 'end']);
+    done();
+  });
+});
+
+it('should pass async validation with options', (done) => {
+  asyncValidateWithOptions('en-us', err => {
+    equal(err, null);
+    done();
+  });
+});
+
+it('should fail async validation with options', (done) => {
+  asyncValidateWithOptions('en', err => {
+    deepEqual(err, ['locale']);
+    done();
+  });
+});
+
+it('should pass async validation with overriden options', (done) => {
+  syncValidateWithOverridenOptions('ru-ru', err => {
+    equal(err, null);
+    done();
+  });
+});
+
+it('should fail async validation with overriden options', (done) => {
+  syncValidateWithOverridenOptions('ru', err => {
+    deepEqual(err, ['locale']);
     done();
   });
 });
