@@ -16,7 +16,7 @@ npm install --save validate-smth
 var validateSmth = require('validate-smth');
 var isString = require('is-string');
 
-var validateString = validate()
+var validateString = validateSmth()
   .use(isString, 'type')
   .use(function (value) {
     return value === 'awesome';
@@ -31,13 +31,13 @@ validateString('awesome'); // null
 
 ### validateSmth()
 
-  Create new validate function
+  Create new validate function (`vf`)
 
 ### .use(fn, context)
 
-  Add validation function as validation middleware with specified error context
+  Add function as validation middleware with specified error context
 
-  Can be used validate functions as middleware
+  Can be used validate functions (`vf`) as middleware
 
 ```js
 var validateStringType = validateSmth().use(isString, 'type');
@@ -85,9 +85,13 @@ validateSmth()
   });
 ```
 
+### vf(value[, next])
+
+  Alias for `vf.exec`
+
 ## Middlewares
 
-  Sync function
+  Can be used sync function
 
 ```js
 function mw(value) {
@@ -95,7 +99,7 @@ function mw(value) {
 }
 ```
 
-  Async function
+  And async function
 
 ```js
 function mw(value, next) {
