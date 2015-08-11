@@ -99,179 +99,185 @@ const mixedNestedValidateString = validate()
   .use(asyncValidateStringStart, 'start')
   .use(syncValidateStringEnd, 'end');
 
-it('should pass sync validation', () => {
-  equal(syncValidateStringType('awesome'), null);
-});
+describe('Sync validation', () => {
+  it('should pass simple', () => {
+    equal(syncValidateStringType('awesome'), null);
+  });
 
-it('should fail sync validation', () => {
-  deepEqual(syncValidateStringType(12), ['type']);
-});
+  it('should fail simple', () => {
+    deepEqual(syncValidateStringType(12), ['type']);
+  });
 
-it('should pass sync validation using function as middleware', () => {
-  equal(syncValidateString('awesome'), null);
-});
+  it('should pass using function as middleware', () => {
+    equal(syncValidateString('awesome'), null);
+  });
 
-it('should fail sync validation using function as middleware', () => {
-  deepEqual(syncValidateString(12), ['type']);
-  deepEqual(syncValidateString('superb'), ['start']);
-});
+  it('should fail using function as middleware', () => {
+    deepEqual(syncValidateString(12), ['type']);
+    deepEqual(syncValidateString('superb'), ['start']);
+  });
 
-it('should pass sync validation using not blocking middleware', () => {
-  equal(syncNotBlockingValidateString('awesome'), null);
-});
+  it('should pass using not blocking middleware', () => {
+    equal(syncNotBlockingValidateString('awesome'), null);
+  });
 
-it('should fail sync validation using not blocking middleware', () => {
-  deepEqual(syncNotBlockingValidateString(12), ['type']);
-  deepEqual(syncNotBlockingValidateString('superb'), ['start', 'end']);
-});
+  it('should fail using not blocking middleware', () => {
+    deepEqual(syncNotBlockingValidateString(12), ['type']);
+    deepEqual(syncNotBlockingValidateString('superb'), ['start', 'end']);
+  });
 
-it('should pass sync validation with nested errors', () => {
-  equal(syncNestedValidateString('awesome'), null);
-});
+  it('should pass with nested errors', () => {
+    equal(syncNestedValidateString('awesome'), null);
+  });
 
-it('should fail sync validation with nested errors', () => {
-  deepEqual(syncNestedValidateString(12), ['type', 'type.type']);
-  deepEqual(syncNestedValidateString('superb'), ['start', 'start.start', 'end']);
-});
+  it('should fail with nested errors', () => {
+    deepEqual(syncNestedValidateString(12), ['type', 'type.type']);
+    deepEqual(syncNestedValidateString('superb'), ['start', 'start.start', 'end']);
+  });
 
-it('should pass sync validation with options', () => {
-  equal(syncValidateWithOptions('en-us'), null);
-});
+  it('should pass with options', () => {
+    equal(syncValidateWithOptions('en-us'), null);
+  });
 
-it('should fail sync validation with options', () => {
-  deepEqual(syncValidateWithOptions('en'), ['locale']);
-});
+  it('should fail with options', () => {
+    deepEqual(syncValidateWithOptions('en'), ['locale']);
+  });
 
-it('should pass sync validation with overriden options', () => {
-  equal(syncValidateWithOverridenOptions('ru-ru'), null);
-});
+  it('should pass with overriden options', () => {
+    equal(syncValidateWithOverridenOptions('ru-ru'), null);
+  });
 
-it('should fail sync validation with overriden options', () => {
-  deepEqual(syncValidateWithOverridenOptions('ru'), ['locale']);
-});
-
-it('should pass async validation', (done) => {
-  asyncValidateStringType('awesome', err => {
-    equal(err, null);
-    done();
+  it('should fail with overriden options', () => {
+    deepEqual(syncValidateWithOverridenOptions('ru'), ['locale']);
   });
 });
 
-it('should fail async validation', (done) => {
-  asyncValidateStringType(12, err => {
-    deepEqual(err, ['type']);
-    done();
+describe('Async validation', () => {
+  it('should pass simple', (done) => {
+    asyncValidateStringType('awesome', err => {
+      equal(err, null);
+      done();
+    });
+  });
+
+  it('should fail simple', (done) => {
+    asyncValidateStringType(12, err => {
+      deepEqual(err, ['type']);
+      done();
+    });
+  });
+
+  it('should pass using function as middleware', (done) => {
+    asyncValidateString('awesome', err => {
+      equal(err, null);
+      done();
+    });
+  });
+
+  it('should fail using function as middleware', (done) => {
+    asyncValidateString('superb', err => {
+      deepEqual(err, ['start']);
+      done();
+    });
+  });
+
+  it('should pass using not blocking middleware', (done) => {
+    asyncNotBlockingValidateString('awesome', err => {
+      equal(err, null);
+      done();
+    });
+  });
+
+  it('should fail using not blocking middleware', (done) => {
+    asyncNotBlockingValidateString('superb', err => {
+      deepEqual(err, ['start', 'end']);
+      done();
+    });
+  });
+
+  it('should pass with nested errors', (done) => {
+    asyncNestedValidateString('awesome', err => {
+      equal(err, null);
+      done();
+    });
+  });
+
+  it('should fail with nested errors', (done) => {
+    asyncNestedValidateString('superb', err => {
+      deepEqual(err, ['start', 'start.start', 'end']);
+      done();
+    });
+  });
+
+  it('should pass with options', (done) => {
+    asyncValidateWithOptions('en-us', err => {
+      equal(err, null);
+      done();
+    });
+  });
+
+  it('should fail with options', (done) => {
+    asyncValidateWithOptions('en', err => {
+      deepEqual(err, ['locale']);
+      done();
+    });
+  });
+
+  it('should pass with overriden options', (done) => {
+    asyncValidateWithOverridenOptions('ru-ru', err => {
+      equal(err, null);
+      done();
+    });
+  });
+
+  it('should fail with overriden options', (done) => {
+    asyncValidateWithOverridenOptions('ru', err => {
+      deepEqual(err, ['locale']);
+      done();
+    });
   });
 });
 
-it('should pass async validation using function as middleware', (done) => {
-  asyncValidateString('awesome', err => {
-    equal(err, null);
-    done();
+describe('Mixed validation', () => {
+  it('should pass using function as middleware', (done) => {
+    mixedValidateString('awesome', err => {
+      equal(err, null);
+      done();
+    });
   });
-});
 
-it('should fail async validation using function as middleware', (done) => {
-  asyncValidateString('superb', err => {
-    deepEqual(err, ['start']);
-    done();
+  it('should fail using function as middleware', (done) => {
+    mixedValidateString('awesomeness', err => {
+      deepEqual(err, ['end']);
+      done();
+    });
   });
-});
 
-it('should pass async validation using not blocking middleware', (done) => {
-  asyncNotBlockingValidateString('awesome', err => {
-    equal(err, null);
-    done();
+  it('should pass using not blocking middleware', (done) => {
+    mixedNotBlockingValidateString('awesome', err => {
+      equal(err, null);
+      done();
+    });
   });
-});
 
-it('should fail async validation using not blocking middleware', (done) => {
-  asyncNotBlockingValidateString('superb', err => {
-    deepEqual(err, ['start', 'end']);
-    done();
+  it('should fail using not blocking middleware', (done) => {
+    mixedNotBlockingValidateString('superb', err => {
+      deepEqual(err, ['start', 'end']);
+      done();
+    });
   });
-});
 
-it('should pass async validation with nested errors', (done) => {
-  asyncNestedValidateString('awesome', err => {
-    equal(err, null);
-    done();
+  it('should pass with nested errors', (done) => {
+    mixedNestedValidateString('awesome', err => {
+      equal(err, null);
+      done();
+    });
   });
-});
 
-it('should fail async validation with nested errors', (done) => {
-  asyncNestedValidateString('superb', err => {
-    deepEqual(err, ['start', 'start.start', 'end']);
-    done();
-  });
-});
-
-it('should pass async validation with options', (done) => {
-  asyncValidateWithOptions('en-us', err => {
-    equal(err, null);
-    done();
-  });
-});
-
-it('should fail async validation with options', (done) => {
-  asyncValidateWithOptions('en', err => {
-    deepEqual(err, ['locale']);
-    done();
-  });
-});
-
-it('should pass async validation with overriden options', (done) => {
-  syncValidateWithOverridenOptions('ru-ru', err => {
-    equal(err, null);
-    done();
-  });
-});
-
-it('should fail async validation with overriden options', (done) => {
-  syncValidateWithOverridenOptions('ru', err => {
-    deepEqual(err, ['locale']);
-    done();
-  });
-});
-
-it('should pass mixed validation using function as middleware', (done) => {
-  mixedValidateString('awesome', err => {
-    equal(err, null);
-    done();
-  });
-});
-
-it('should fail mixed validation using function as middleware', (done) => {
-  mixedValidateString('awesomeness', err => {
-    deepEqual(err, ['end']);
-    done();
-  });
-});
-
-it('should pass mixed validation using not blocking middleware', (done) => {
-  mixedNotBlockingValidateString('awesome', err => {
-    equal(err, null);
-    done();
-  });
-});
-
-it('should fail mixed validation using not blocking middleware', (done) => {
-  mixedNotBlockingValidateString('superb', err => {
-    deepEqual(err, ['start', 'end']);
-    done();
-  });
-});
-
-it('should pass mixed validation with nested errors', (done) => {
-  mixedNestedValidateString('awesome', err => {
-    equal(err, null);
-    done();
-  });
-});
-
-it('should fail mixed validation with nested errors', (done) => {
-  mixedNestedValidateString('superb', err => {
-    deepEqual(err, ['start', 'start.start', 'end']);
-    done();
+  it('should fail with nested errors', (done) => {
+    mixedNestedValidateString('superb', err => {
+      deepEqual(err, ['start', 'start.start', 'end']);
+      done();
+    });
   });
 });
