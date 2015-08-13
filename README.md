@@ -136,32 +136,53 @@ function mw(value, options, next) {
 
 ## Example
 
+  validate-name
+
 ```js
 var validateSmth = require('validate-smth');
-var isEmail = require('is-email');
-var isObject = require('is-object');
 
-var validateName = validateSmth()
+module.exports = validateSmth()
   .use(function (value) {
     return 'name' in value;
   }, 'require')
   .use(function (value) {
     return value.name.length > 0;
   }, 'length');
+```
 
-var validateEmail = validateSmth()
+  validate-email
+
+```js
+var isEmail = require('is-email');
+var validateSmth = require('validate-smth');
+
+module.exports = validateSmth()
   .use(function (value) {
     return 'email' in value;
   }, 'require')
   .use(isEmail, 'format');
+```
 
-var validateUser = validateSmth()
+  validate-user
+
+```js
+var isObject = require('is-object');
+var validateName = require('validate-name');
+var validateEmail = require('validate-email');
+var validateSmth = require('validate-smth');
+
+module.exports = validateSmth()
   .nestedErrors()
   .use(isObject, 'type')
   .notBlocking()
   .use(validateName, 'name')
   .use(validateEmail, 'email');
+```
 
+  app
+
+```js
+var validateUser = require('validate-user');
 validateUser(undefined); // ['type']
 validateUser({}); // ['name', 'name.require', 'email', 'email.require']
 validateUser({name: 'awesome', email: 'awesome'}); // ['email', 'email.format']
