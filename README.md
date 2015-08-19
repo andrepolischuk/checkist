@@ -1,4 +1,4 @@
-# validate-smth [![Build Status][travis-image]][travis-url]
+# checkist [![Build Status][travis-image]][travis-url]
 
   > Tool for compose modular and reusable validation functions
 
@@ -7,29 +7,29 @@
 ## Install
 
 ```sh
-npm install --save validate-smth
+npm install --save checkist
 ```
 
 ## Usage
 
 ```js
-var validateSmth = require('validate-smth');
+var checkist = require('checkist');
 var isString = require('is-string');
 
-var validateString = validateSmth()
+var checkString = checkist()
   .use(isString, 'type')
   .use(function (value) {
     return value === 'awesome';
   }, 'content');
 
-validateString(100); // ['type']
-validateString('superb'); // ['content']
-validateString('awesome'); // null
+checkString(100); // ['type']
+checkString('superb'); // ['content']
+checkString('awesome'); // null
 ```
 
 ## API
 
-### validateSmth(defaults)
+### checkist(defaults)
 
   Create new validation function (`vf`) with default options
 
@@ -40,15 +40,15 @@ validateString('awesome'); // null
   Can be used validation functions (`vf`) as middleware
 
 ```js
-var validateStringType = validateSmth()
+var checkStringType = checkist()
   .use(isString, 'type');
 
-var validateStringLength = validateSmth()
+var checkStringLength = checkist()
   .use(hasLength, 'length');
 
-var validateString = validateSmth()
-  .use(validateStringType, 'type')
-  .use(validateStringLength, 'length');
+var checkString = checkist()
+  .use(checkStringType, 'type')
+  .use(checkStringLength, 'length');
 ```
 
 ### .exec(value[, options, fn])
@@ -58,7 +58,7 @@ var validateString = validateSmth()
   For sync function:
 
 ```js
-validateSmth()
+checkist()
   .use(isObject, 'type')
   .exec({}); // null
 ```
@@ -66,7 +66,7 @@ validateSmth()
   For async function:
 
 ```js
-validateSmth()
+checkist()
   .use(isObject, 'type')
   .exec({}, function (err) {
     err; // null
@@ -78,7 +78,7 @@ validateSmth()
   Start using not blocking middlewares
 
 ```js
-validateSmth()
+checkist()
   .use(isObject, 'type')
   .notBlocking()
   .use(hasName, 'name')
@@ -93,21 +93,21 @@ validateSmth()
   Push all nested errors in result
 
 ```js
-var validateEmail = validateSmth()
+var checkEmail = checkist()
   .use(function (value) {
     return 'email' in value;
   }, 'require')
   .use(isEmail, 'format');
 
-var validateUser = validateSmth()
+var checkUser = checkist()
   .nestedErrors()
   .notBlocking()
   .use(function (value) {
     return 'name' in value;
   }, 'name')
-  .use(validateEmail, 'email');
+  .use(checkEmail, 'email');
 
-validateUser({}); // ['email', 'email.require', 'name']
+checkUser({}); // ['email', 'email.require', 'name']
 ```
 
 ### vf(value[, next])
@@ -136,12 +136,12 @@ function mw(value, options, next) {
 
 ## Example
 
-  validate-name
+  check-name
 
 ```js
-var validateSmth = require('validate-smth');
+var checkist = require('checkist');
 
-module.exports = validateSmth()
+module.exports = checkist()
   .use(function (value) {
     return 'name' in value;
   }, 'require')
@@ -150,48 +150,48 @@ module.exports = validateSmth()
   }, 'length');
 ```
 
-  validate-email
+  check-email
 
 ```js
 var isEmail = require('is-email');
-var validateSmth = require('validate-smth');
+var checkist = require('checkist');
 
-module.exports = validateSmth()
+module.exports = checkist()
   .use(function (value) {
     return 'email' in value;
   }, 'require')
   .use(isEmail, 'format');
 ```
 
-  validate-user
+  check-user
 
 ```js
 var isObject = require('is-object');
-var validateName = require('validate-name');
-var validateEmail = require('validate-email');
-var validateSmth = require('validate-smth');
+var checkName = require('check-name');
+var checkEmail = require('check-email');
+var checkist = require('checkist');
 
-module.exports = validateSmth()
+module.exports = checkist()
   .nestedErrors()
   .use(isObject, 'type')
   .notBlocking()
-  .use(validateName, 'name')
-  .use(validateEmail, 'email');
+  .use(checkName, 'name')
+  .use(checkEmail, 'email');
 ```
 
   app
 
 ```js
-var validateUser = require('validate-user');
-validateUser(undefined); // ['type']
-validateUser({}); // ['name', 'name.require', 'email', 'email.require']
-validateUser({name: 'awesome', email: 'awesome'}); // ['email', 'email.format']
-validateUser({name: 'awesome', email: 'awesome@gmail.com'}); // null
+var checkUser = require('check-user');
+checkUser(undefined); // ['type']
+checkUser({}); // ['name', 'name.require', 'email', 'email.require']
+checkUser({name: 'awesome', email: 'awesome'}); // ['email', 'email.format']
+checkUser({name: 'awesome', email: 'awesome@gmail.com'}); // null
 ```
 
 ## License
 
   MIT
 
-[travis-url]: https://travis-ci.org/andrepolischuk/validate-smth
-[travis-image]: https://travis-ci.org/andrepolischuk/validate-smth.svg?branch=master
+[travis-url]: https://travis-ci.org/andrepolischuk/checkist
+[travis-image]: https://travis-ci.org/andrepolischuk/checkist.svg?branch=master

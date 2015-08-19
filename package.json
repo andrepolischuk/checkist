@@ -1,15 +1,17 @@
 {
-  "name": "validate-smth",
+  "name": "checkist",
   "description": "Tool for compose modular and reusable validation functions",
   "version": "0.2.1",
   "keywords": [
     "modular",
     "reusable",
+    "checker",
+    "check",
     "validator",
     "validation",
     "function"
   ],
-  "repository": "andrepolischuk/validate-smth",
+  "repository": "andrepolischuk/checkist",
   "devDependencies": {
     "babel": "^5.5.6",
     "tape": "^4.2.0"

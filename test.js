@@ -1,46 +1,46 @@
 import test from 'tape';
-import validate from './index';
+import checkist from './index';
 
-const syncStringType = validate()
+const syncStringType = checkist()
   .use(value => typeof value === 'string', 'type');
 
-const syncStringStart = validate()
+const syncStringStart = checkist()
   .use(value => value.charAt(0) === 'a', 'start');
 
 const syncStringEnd = value => value.charAt(value.length - 1) === 'e';
 
-const syncString = validate()
+const syncString = checkist()
   .use(syncStringType, 'type')
   .use(syncStringStart, 'start')
   .use(syncStringEnd, 'end');
 
-const syncNotBlockingString = validate()
+const syncNotBlockingString = checkist()
   .use(syncStringType, 'type')
   .notBlocking()
   .use(syncStringStart, 'start')
   .use(syncStringEnd, 'end');
 
-const syncNestedString = validate()
+const syncNestedString = checkist()
   .nestedErrors()
   .use(syncStringType, 'type')
   .notBlocking()
   .use(syncStringStart, 'start')
   .use(syncStringEnd, 'end');
 
-const syncWithOptions = validate({locale: 'en-us'})
+const syncWithOptions = checkist({locale: 'en-us'})
   .use((value, options) => value === options.locale, 'locale');
 
-const syncWithOverridenOptions = validate({locale: 'ru-ru'})
+const syncWithOverridenOptions = checkist({locale: 'ru-ru'})
   .use(syncWithOptions, 'locale');
 
-const asyncStringType = validate()
+const asyncStringType = checkist()
   .use((value, options, next) => {
     setTimeout(() => {
       next(typeof value === 'string');
     }, 100);
   }, 'type');
 
-const asyncStringStart = validate()
+const asyncStringStart = checkist()
   .use((value, options, next) => {
     setTimeout(() => {
       next(value.charAt(0) === 'a');
@@ -53,57 +53,57 @@ const asyncStringEnd = (value, options, next) => {
   }, 100);
 }
 
-const asyncString = validate()
+const asyncString = checkist()
   .use(asyncStringType, 'type')
   .use(asyncStringStart, 'start')
   .use(asyncStringEnd, 'end');
 
-const asyncNotBlockingString = validate()
+const asyncNotBlockingString = checkist()
   .use(asyncStringType, 'type')
   .notBlocking()
   .use(asyncStringStart, 'start')
   .use(asyncStringEnd, 'end');
 
-const asyncNestedString = validate()
+const asyncNestedString = checkist()
   .nestedErrors()
   .use(asyncStringType, 'type')
   .notBlocking()
   .use(asyncStringStart, 'start')
   .use(asyncStringEnd, 'end');
 
-const asyncWithOptions = validate({locale: 'en-us'})
+const asyncWithOptions = checkist({locale: 'en-us'})
   .use((value, options, next) => {
     setTimeout(() => {
       next(value === options.locale);
     }, 100);
   }, 'locale');
 
-const asyncWithOverridenOptions = validate({locale: 'ru-ru'})
+const asyncWithOverridenOptions = checkist({locale: 'ru-ru'})
   .use(asyncWithOptions, 'locale');
 
-const mixedString = validate()
+const mixedString = checkist()
   .use(syncStringType, 'type')
   .use(asyncStringStart, 'start')
   .use(syncStringEnd, 'end');
 
-const mixedNotBlockingString = validate()
+const mixedNotBlockingString = checkist()
   .use(syncStringType, 'type')
   .notBlocking()
   .use(asyncStringStart, 'start')
   .use(syncStringEnd, 'end');
 
-const mixedNestedString = validate()
+const mixedNestedString = checkist()
   .nestedErrors()
   .use(syncStringType, 'type')
   .notBlocking()
   .use(asyncStringStart, 'start')
   .use(syncStringEnd, 'end');
 
-const mixedWithOptions = validate()
+const mixedWithOptions = checkist()
   .use(syncStringType, 'type')
   .use(asyncWithOptions, 'locale');
 
-const mixedWithOverridenOptions = validate({locale: 'ru-ru'})
+const mixedWithOverridenOptions = checkist({locale: 'ru-ru'})
   .use(syncStringType, 'type')
   .use(asyncWithOptions, 'locale');
 
