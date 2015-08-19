@@ -33,6 +33,10 @@ const syncWithOptions = checkist({locale: 'en-us'})
 const syncWithOverridenOptions = checkist({locale: 'ru-ru'})
   .use(syncWithOptions, 'locale');
 
+const syncWithProps = checkist()
+  .use(value => typeof value === 'object', 'type')
+  .use(syncStringType, 'name', 'name');
+
 const asyncStringType = checkist()
   .use((value, options, next) => {
     setTimeout(() => {
@@ -81,6 +85,14 @@ const asyncWithOptions = checkist({locale: 'en-us'})
 const asyncWithOverridenOptions = checkist({locale: 'ru-ru'})
   .use(asyncWithOptions, 'locale');
 
+const asyncWithProps = checkist()
+  .use((value, options, next) => {
+    setTimeout(() => {
+      next(typeof value === 'object');
+    });
+  }, 'type')
+  .use(asyncStringType, 'name', 'name');
+
 const mixedString = checkist()
   .use(syncStringType, 'type')
   .use(asyncStringStart, 'start')
@@ -106,6 +118,11 @@ const mixedWithOptions = checkist()
 const mixedWithOverridenOptions = checkist({locale: 'ru-ru'})
   .use(syncStringType, 'type')
   .use(asyncWithOptions, 'locale');
+
+const mixedWithProps = checkist()
+  .use(value => typeof value === 'object', 'type')
+  .use(asyncStringType, 'name', 'name')
+  .use(syncStringType, 'email', 'email');
 
 test('should pass simple', t => {
   t.plan(1);
@@ -168,6 +185,18 @@ test('should pass with overriden options', t => {
 test('should fail with overriden options', t => {
   t.plan(1);
   t.deepEqual(syncWithOverridenOptions('ru'), ['locale']);
+});
+
+test('should pass with props', t => {
+  t.plan(1);
+  t.equal(syncWithProps({name: 'awesome'}), null);
+});
+
+test('should fail with props', t => {
+  t.plan(3);
+  t.deepEqual(syncWithProps('awesome'), ['type']);
+  t.deepEqual(syncWithProps({}), ['name']);
+  t.deepEqual(syncWithProps({name: 12}), ['name']);
 });
 
 test('should pass simple', t => {
@@ -278,6 +307,30 @@ test('should fail with overriden options', t => {
   });
 });
 
+test('should pass with props', t => {
+  t.plan(1);
+
+  asyncWithProps({name: 'awesome'}, err => {
+    t.equal(err, null);
+  });
+});
+
+test('should fail with props', t => {
+  t.plan(3);
+
+  asyncWithProps('awesome', err => {
+    t.deepEqual(err, ['type']);
+  });
+
+  asyncWithProps({}, err => {
+    t.deepEqual(err, ['name']);
+  });
+
+  asyncWithProps({name: 12}, err => {
+    t.deepEqual(err, ['name']);
+  });
+});
+
 test('should pass using function as middleware', t => {
   t.plan(1);
 
@@ -355,5 +408,33 @@ test('should fail with overriden options', t => {
 
   mixedWithOverridenOptions('ru', err => {
     t.deepEqual(err, ['locale']);
+  });
+});
+
+test('should pass with props', t => {
+  t.plan(1);
+
+  mixedWithProps({name: 'awesome', email: 'awesome@gmail.com'}, err => {
+    t.equal(err, null);
+  });
+});
+
+test('should fail with props', t => {
+  t.plan(4);
+
+  mixedWithProps('awesome', err => {
+    t.deepEqual(err, ['type']);
+  });
+
+  mixedWithProps({}, err => {
+    t.deepEqual(err, ['name']);
+  });
+
+  mixedWithProps({name: 12}, err => {
+    t.deepEqual(err, ['name']);
+  });
+
+  mixedWithProps({name: 'awesome'}, err => {
+    t.deepEqual(err, ['email']);
   });
 });

@@ -33,9 +33,9 @@ checkString('awesome'); // null
 
   Create new validation function (`vf`) with default options
 
-### .use(fn, context)
+### .use(fn[, path], context)
 
-  Add function as validation middleware with specified error context
+  Add function as validation middleware with specified nested object prop and error context
 
   Can be used validation functions (`vf`) as middleware
 
@@ -49,6 +49,9 @@ var checkStringLength = checkist()
 var checkString = checkist()
   .use(checkStringType, 'type')
   .use(checkStringLength, 'length');
+
+var checkObject = checkist()
+  .use(checkStringType, 'name', 'nameType');
 ```
 
 ### .exec(value[, options, fn])

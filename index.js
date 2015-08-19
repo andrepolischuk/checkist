@@ -1,3 +1,5 @@
+import {get} from 'dot-prop';
+
 export default (defaults = {}) => {
   const rules = [];
   let blocking = true;
@@ -24,8 +26,13 @@ export default (defaults = {}) => {
     return exec;
   }
 
-  function use(mw, ctx) {
-    rules.push({mw, ctx, blocking});
+  function use(mw, path, ctx) {
+    if (typeof ctx !== 'string') {
+      ctx = path;
+      path = null;
+    }
+
+    rules.push({mw, ctx, blocking, path});
     return exec;
   }
 
@@ -42,14 +49,14 @@ export default (defaults = {}) => {
 
     function next(res) {
       const {ctx, blocking} = rules[i - 1] || {};
-      const {mw} = rules[i++] || {};
+      const {mw, path} = rules[i++] || {};
       const isArray = Array.isArray(res);
       const isInvalid = res === false || isArray;
       const contexts = [ctx];
       if (isArray && nested) contexts.push(...res.map(val => `${ctx}.${val}`));
       if (isInvalid) errors.push(...contexts);
       if (isInvalid && blocking || !mw) return pushResult(errors, fn);
-      res = mw(value, options, fn ? next : fn);
+      res = mw(path ? get(value, path) : value, options, fn ? next : fn);
       if (res !== undefined) return next(res);
     }
 
