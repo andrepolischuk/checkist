@@ -1,4 +1,4 @@
-import {equal, deepEqual} from 'assert';
+import test from 'tape';
 import validate from './index';
 
 const syncStringType = validate()
@@ -107,213 +107,253 @@ const mixedWithOverridenOptions = validate({locale: 'ru-ru'})
   .use(syncStringType, 'type')
   .use(asyncWithOptions, 'locale');
 
-describe('Sync validation', () => {
-  it('should pass simple', () => {
-    equal(syncStringType('awesome'), null);
-  });
+test('should pass simple', t => {
+  t.plan(1);
+  t.equal(syncStringType('awesome'), null);
+});
 
-  it('should fail simple', () => {
-    deepEqual(syncStringType(12), ['type']);
-  });
+test('should fail simple', t => {
+  t.plan(1);
+  t.deepEqual(syncStringType(12), ['type']);
+});
 
-  it('should pass using function as middleware', () => {
-    equal(syncString('awesome'), null);
-  });
+test('should pass using function as middleware', t => {
+  t.plan(1);
+  t.equal(syncString('awesome'), null);
+});
 
-  it('should fail using function as middleware', () => {
-    deepEqual(syncString(12), ['type']);
-    deepEqual(syncString('superb'), ['start']);
-  });
+test('should fail using function as middleware', t => {
+  t.plan(2);
+  t.deepEqual(syncString(12), ['type']);
+  t.deepEqual(syncString('superb'), ['start']);
+});
 
-  it('should pass using not blocking middleware', () => {
-    equal(syncNotBlockingString('awesome'), null);
-  });
+test('should pass using not blocking middleware', t => {
+  t.plan(1);
+  t.equal(syncNotBlockingString('awesome'), null);
+});
 
-  it('should fail using not blocking middleware', () => {
-    deepEqual(syncNotBlockingString(12), ['type']);
-    deepEqual(syncNotBlockingString('superb'), ['start', 'end']);
-  });
+test('should fail using not blocking middleware', t => {
+  t.plan(2);
+  t.deepEqual(syncNotBlockingString(12), ['type']);
+  t.deepEqual(syncNotBlockingString('superb'), ['start', 'end']);
+});
 
-  it('should pass with nested errors', () => {
-    equal(syncNestedString('awesome'), null);
-  });
+test('should pass with nested errors', t => {
+  t.plan(1);
+  t.equal(syncNestedString('awesome'), null);
+});
 
-  it('should fail with nested errors', () => {
-    deepEqual(syncNestedString(12), ['type', 'type.type']);
-    deepEqual(syncNestedString('superb'), ['start', 'start.start', 'end']);
-  });
+test('should fail with nested errors', t => {
+  t.plan(2);
+  t.deepEqual(syncNestedString(12), ['type', 'type.type']);
+  t.deepEqual(syncNestedString('superb'), ['start', 'start.start', 'end']);
+});
 
-  it('should pass with options', () => {
-    equal(syncWithOptions('en-us'), null);
-  });
+test('should pass with options', t => {
+  t.plan(1);
+  t.equal(syncWithOptions('en-us'), null);
+});
 
-  it('should fail with options', () => {
-    deepEqual(syncWithOptions('en'), ['locale']);
-  });
+test('should fail with options', t => {
+  t.plan(1);
+  t.deepEqual(syncWithOptions('en'), ['locale']);
+});
 
-  it('should pass with overriden options', () => {
-    equal(syncWithOverridenOptions('ru-ru'), null);
-  });
+test('should pass with overriden options', t => {
+  t.plan(1);
+  t.equal(syncWithOverridenOptions('ru-ru'), null);
+});
 
-  it('should fail with overriden options', () => {
-    deepEqual(syncWithOverridenOptions('ru'), ['locale']);
+test('should fail with overriden options', t => {
+  t.plan(1);
+  t.deepEqual(syncWithOverridenOptions('ru'), ['locale']);
+});
+
+test('should pass simple', t => {
+  t.plan(1);
+
+  asyncStringType('awesome', err => {
+    t.equal(err, null);
   });
 });
 
-describe('Async validation', () => {
-  it('should pass simple', (done) => {
-    asyncStringType('awesome', err => {
-      equal(err, null);
-      done();
-    });
-  });
+test('should fail simple', t => {
+  t.plan(1);
 
-  it('should fail simple', (done) => {
-    asyncStringType(12, err => {
-      deepEqual(err, ['type']);
-      done();
-    });
-  });
-
-  it('should pass using function as middleware', (done) => {
-    asyncString('awesome', err => {
-      equal(err, null);
-      done();
-    });
-  });
-
-  it('should fail using function as middleware', (done) => {
-    asyncString('superb', err => {
-      deepEqual(err, ['start']);
-      done();
-    });
-  });
-
-  it('should pass using not blocking middleware', (done) => {
-    asyncNotBlockingString('awesome', err => {
-      equal(err, null);
-      done();
-    });
-  });
-
-  it('should fail using not blocking middleware', (done) => {
-    asyncNotBlockingString('superb', err => {
-      deepEqual(err, ['start', 'end']);
-      done();
-    });
-  });
-
-  it('should pass with nested errors', (done) => {
-    asyncNestedString('awesome', err => {
-      equal(err, null);
-      done();
-    });
-  });
-
-  it('should fail with nested errors', (done) => {
-    asyncNestedString('superb', err => {
-      deepEqual(err, ['start', 'start.start', 'end']);
-      done();
-    });
-  });
-
-  it('should pass with options', (done) => {
-    asyncWithOptions('en-us', err => {
-      equal(err, null);
-      done();
-    });
-  });
-
-  it('should fail with options', (done) => {
-    asyncWithOptions('en', err => {
-      deepEqual(err, ['locale']);
-      done();
-    });
-  });
-
-  it('should pass with overriden options', (done) => {
-    asyncWithOverridenOptions('ru-ru', err => {
-      equal(err, null);
-      done();
-    });
-  });
-
-  it('should fail with overriden options', (done) => {
-    asyncWithOverridenOptions('ru', err => {
-      deepEqual(err, ['locale']);
-      done();
-    });
+  asyncStringType(12, err => {
+    t.deepEqual(err, ['type']);
   });
 });
 
-describe('Mixed validation', () => {
-  it('should pass using function as middleware', (done) => {
-    mixedString('awesome', err => {
-      equal(err, null);
-      done();
-    });
+test('should pass using function as middleware', t => {
+  t.plan(1);
+
+  asyncString('awesome', err => {
+    t.equal(err, null);
+  });
+});
+
+test('should fail using function as middleware', t => {
+  t.plan(2);
+
+  asyncString(12, err => {
+    t.deepEqual(err, ['type']);
   });
 
-  it('should fail using function as middleware', (done) => {
-    mixedString('awesomeness', err => {
-      deepEqual(err, ['end']);
-      done();
-    });
+  asyncString('superb', err => {
+    t.deepEqual(err, ['start']);
+  });
+});
+
+test('should pass using not blocking middleware', t => {
+  t.plan(1);
+
+  asyncNotBlockingString('awesome', err => {
+    t.equal(err, null);
+  });
+});
+
+test('should fail using not blocking middleware', t => {
+  t.plan(2);
+
+  asyncNotBlockingString(12, err => {
+    t.deepEqual(err, ['type']);
   });
 
-  it('should pass using not blocking middleware', (done) => {
-    mixedNotBlockingString('awesome', err => {
-      equal(err, null);
-      done();
-    });
+  asyncNotBlockingString('superb', err => {
+    t.deepEqual(err, ['start', 'end']);
+  });
+});
+
+test('should pass with nested errors', t => {
+  t.plan(1);
+
+  asyncNestedString('awesome', err => {
+    t.equal(err, null);
+  });
+});
+
+test('should fail with nested errors', t => {
+  t.plan(2);
+
+  asyncNestedString(12, err => {
+    t.deepEqual(err, ['type', 'type.type']);
   });
 
-  it('should fail using not blocking middleware', (done) => {
-    mixedNotBlockingString('superb', err => {
-      deepEqual(err, ['start', 'end']);
-      done();
-    });
+  asyncNestedString('superb', err => {
+    t.deepEqual(err, ['start', 'start.start', 'end']);
   });
+});
 
-  it('should pass with nested errors', (done) => {
-    mixedNestedString('awesome', err => {
-      equal(err, null);
-      done();
-    });
+test('should pass with options', t => {
+  t.plan(1);
+
+  asyncWithOptions('en-us', err => {
+    t.equal(err, null);
   });
+});
 
-  it('should fail with nested errors', (done) => {
-    mixedNestedString('superb', err => {
-      deepEqual(err, ['start', 'start.start', 'end']);
-      done();
-    });
+test('should fail with options', t => {
+  t.plan(1);
+
+  asyncWithOptions('en', err => {
+    t.deepEqual(err, ['locale']);
   });
+});
 
-  it('should pass with options', (done) => {
-    mixedWithOptions('en-us', err => {
-      equal(err, null);
-      done();
-    });
+test('should pass with overriden options', t => {
+  t.plan(1);
+
+  asyncWithOverridenOptions('ru-ru', err => {
+    t.equal(err, null);
   });
+});
 
-  it('should fail with options', (done) => {
-    mixedWithOptions('en', err => {
-      deepEqual(err, ['locale']);
-      done();
-    });
+test('should fail with overriden options', t => {
+  t.plan(1);
+
+  asyncWithOverridenOptions('ru', err => {
+    t.deepEqual(err, ['locale']);
   });
+});
 
-  it('should pass with overriden options', (done) => {
-    mixedWithOverridenOptions('ru-ru', err => {
-      equal(err, null);
-      done();
-    });
+test('should pass using function as middleware', t => {
+  t.plan(1);
+
+  mixedString('awesome', err => {
+    t.equal(err, null);
   });
+});
 
-  it('should fail with overriden options', (done) => {
-    mixedWithOverridenOptions('ru', err => {
-      deepEqual(err, ['locale']);
-      done();
-    });
+test('should fail using function as middleware', t => {
+  t.plan(1);
+
+  mixedString('awesomeness', err => {
+    t.deepEqual(err, ['end']);
+  });
+});
+
+test('should pass using not blocking middleware', t => {
+  t.plan(1);
+
+  mixedNotBlockingString('awesome', err => {
+    t.equal(err, null);
+  });
+});
+
+test('should fail using not blocking middleware', t => {
+  t.plan(1);
+
+  mixedNotBlockingString('superb', err => {
+    t.deepEqual(err, ['start', 'end']);
+  });
+});
+
+test('should pass with nested errors', t => {
+  t.plan(1);
+
+  mixedNestedString('awesome', err => {
+    t.equal(err, null);
+  });
+});
+
+test('should fail with nested errors', t => {
+  t.plan(1);
+
+  mixedNestedString('superb', err => {
+    t.deepEqual(err, ['start', 'start.start', 'end']);
+  });
+});
+
+test('should pass with options', t => {
+  t.plan(1);
+
+  mixedWithOptions('en-us', err => {
+    t.equal(err, null);
+  });
+});
+
+test('should fail with options', t => {
+  t.plan(1);
+
+  mixedWithOptions('en', err => {
+    t.deepEqual(err, ['locale']);
+  });
+});
+
+test('should pass with overriden options', t => {
+  t.plan(1);
+
+  mixedWithOverridenOptions('ru-ru', err => {
+    t.equal(err, null);
+  });
+});
+
+test('should fail with overriden options', t => {
+  t.plan(1);
+
+  mixedWithOverridenOptions('ru', err => {
+    t.deepEqual(err, ['locale']);
   });
 });
