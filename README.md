@@ -139,50 +139,48 @@ function mw(value, options, next) {
 
 ## Example
 
-  check-name
+  check-name.js
 
 ```js
 var checkist = require('checkist');
+var isString = require('is-string');
 
 module.exports = checkist()
+  .use(isString, 'require')
   .use(function (value) {
-    return 'name' in value;
-  }, 'require')
-  .use(function (value) {
-    return value.name.length > 0;
+    return value.length > 0;
   }, 'length');
 ```
 
-  check-email
+  check-email.js
 
 ```js
-var isEmail = require('is-email');
 var checkist = require('checkist');
+var isEmail = require('is-email');
+var isString = require('is-string');
 
 module.exports = checkist()
-  .use(function (value) {
-    return 'email' in value;
-  }, 'require')
+  .use(isString, 'require')
   .use(isEmail, 'format');
 ```
 
-  check-user
+  check-user.js
 
 ```js
-var isObject = require('is-object');
-var checkName = require('check-name');
-var checkEmail = require('check-email');
 var checkist = require('checkist');
+var checkEmail = require('check-email');
+var checkName = require('check-name');
+var isObject = require('is-object');
 
 module.exports = checkist()
   .nestedErrors()
   .use(isObject, 'type')
   .notBlocking()
-  .use(checkName, 'name')
-  .use(checkEmail, 'email');
+  .use(checkName, 'name', 'name')
+  .use(checkEmail, 'email', 'email');
 ```
 
-  app
+  app.js
 
 ```js
 var checkUser = require('check-user');
