@@ -27,11 +27,7 @@ export default (defaults = {}) => {
   }
 
   function use(mw, path, ctx) {
-    if (typeof ctx !== 'string') {
-      ctx = path;
-      path = null;
-    }
-
+    if (typeof ctx !== 'string') [ctx, path] = [path, null];
     rules.push({mw, ctx, blocking, path});
     return exec;
   }
@@ -39,12 +35,7 @@ export default (defaults = {}) => {
   function exec(value, options, fn) {
     const errors = [];
     let i = 0;
-
-    if (typeof options === 'function') {
-      fn = options;
-      options = {};
-    }
-
+    if (typeof options === 'function') [fn, options] = [options, {}];
     options = Object.assign({}, defaults, options);
 
     function next(res) {
